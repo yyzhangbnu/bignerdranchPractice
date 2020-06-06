@@ -10,6 +10,16 @@ public class Crime {
     private Date mDate;
     private boolean mSolved;
 
+    public int getmRequiresPolice() {
+        return mRequiresPolice;
+    }
+
+    public void setmRequiresPolice(int mRequiresPolice) {
+        this.mRequiresPolice = mRequiresPolice;
+    }
+
+    private int mRequiresPolice;
+
     public String getmTile() {
         return mTile;
     }
