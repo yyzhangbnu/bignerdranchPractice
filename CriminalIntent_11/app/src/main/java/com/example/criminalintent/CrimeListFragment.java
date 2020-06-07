@@ -96,14 +96,17 @@ public class CrimeListFragment extends Fragment {
         public void onClick(View v) {
             Log.d("ViewHolder", mCrime.getmTile());
 
-            /* Toast.makeText(getActivity(), mCrime.getmTile() + " clicked!", Toast.LENGTH_SHORT).show();*/
+            /* Toast.makeText(getActivity(), mCrime.getmTile() + " clicked!", Toast.LENGTH_SHORT).show();
 
             Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getmId());
 
             itemPosition = getAdapterPosition();
             startActivity(intent);
-           // startActivityForResult(intent, REQUEST_CRIME);
+            startActivityForResult(intent, REQUEST_CRIME);
+            */
 
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getmId());
+            startActivity(intent);
         }
     }
 
@@ -184,7 +187,5 @@ public class CrimeListFragment extends Fragment {
                 return 0;
             }
         }
-
-
     }
 }
