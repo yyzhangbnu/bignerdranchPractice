@@ -1,0 +1,4 @@
+#Sun Jun 14 15:36:30 CST 2020
+base.0=/Users/yaozhamac/Development/gitbubSource/practice/_localdatabase/app/build/intermediates/dex/debug/out/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
