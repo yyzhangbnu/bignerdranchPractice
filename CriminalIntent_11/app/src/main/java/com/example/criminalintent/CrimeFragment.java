@@ -52,7 +52,7 @@ public class CrimeFragment extends Fragment {
         // parse the argument which input at newInstance.
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
-        Log.d("CrimeFragment", mCrime.getmTile());
+       // Log.d("CrimeFragment", mCrime.getmTile());
     }
 
     @Override
@@ -92,6 +92,7 @@ public class CrimeFragment extends Fragment {
                //  DatePickerFragment dialog = new DatePickerFragment();
                 DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getmDate());
 
+                // 设置target fragment是CrimeFragment，dialog是DatePickerFragment,
                 dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
 
                 dialog.show(manager, DIALOG_DATE);
