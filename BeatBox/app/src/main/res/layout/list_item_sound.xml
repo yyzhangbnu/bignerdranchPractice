@@ -2,8 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable name="viewmodel"
+            type="com.example.beatbox.SoundViewModel"/>
+    </data>
     <Button
         android:layout_width="match_parent"
         android:layout_height="120dp"
+        android:text="@{viewmodel.title}"
         tools:text="Sound Name" />
 </layout>

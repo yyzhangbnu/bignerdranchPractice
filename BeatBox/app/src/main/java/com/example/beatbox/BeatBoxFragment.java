@@ -48,18 +48,27 @@ public class BeatBoxFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private class SoundHolder extends RecyclerView.ViewHolder{
+    private class SoundHolder extends RecyclerView.ViewHolder {
         private ListItemSoundBinding mBinding;
-        private SoundHolder(ListItemSoundBinding binding){
+
+        // SoundHolder 构造函数
+        private SoundHolder(ListItemSoundBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
+            mBinding.setViewmodel(new SoundViewModel(mBeatBox));
+        }
+
+        public void bind(Sound sound) {
+            mBinding.getViewmodel().setmSound(sound);
+            mBinding.executePendingBindings();
         }
     }
 
-    private class SoundAdapter extends RecyclerView.Adapter<SoundHolder>{
+    private class SoundAdapter extends RecyclerView.Adapter<SoundHolder> {
 
         private List<Sound> mSounds;
-        public SoundAdapter(List<Sound> sounds){
+
+        public SoundAdapter(List<Sound> sounds) {
             mSounds = sounds;
         }
 
@@ -73,6 +82,8 @@ public class BeatBoxFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull SoundHolder holder, int position) {
+            Sound sound = mSounds.get(position);
+            holder.bind(sound);
         }
 
         @Override
