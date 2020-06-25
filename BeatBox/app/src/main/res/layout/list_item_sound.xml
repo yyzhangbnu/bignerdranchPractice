@@ -3,13 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewmodel"
-            type="com.example.beatbox.SoundViewModel"/>
+
+        <variable
+            name="viewmodel"
+            type="com.example.beatbox.SoundViewModel" />
     </data>
-    <Button
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:onClick="@{()->viewmodel.onButtonClicked()}"
-        android:text="@{viewmodel.title}"
-        tools:text="Sound Name" />
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:onClick="@{()->viewmodel.onButtonClicked()}"
+            android:text="@{viewmodel.title}"
+            tools:text="Sound Name" />
+    </FrameLayout>
 </layout>
