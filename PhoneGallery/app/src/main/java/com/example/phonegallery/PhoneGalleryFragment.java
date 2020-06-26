@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,26 +15,77 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhoneGalleryFragment extends Fragment {
     private RecyclerView mPhotoRecylerView;
 
     private static final String TAG = "PhotoGalleryFragment";
 
-    // 在Fragment中添加内部类 FetchItemsTask 然后覆盖AsyncTask doInBackground方法 在里面从目标网站获取数据并日志记录
-    private class FetchItemsTask extends AsyncTask<Void, Void, Void>{
+    private RecyclerView mPhotoRecyclerView;
+    private List<GalleryItem> mItems = new ArrayList<>();
+
+    private class PhotoHolder extends RecyclerView.ViewHolder {
+        private TextView mTitleTextView;
+
+        public PhotoHolder(View itemView) {
+            super(itemView);
+            mTitleTextView = (TextView) itemView;
+        }
+
+        public void bindGalleryItem(GalleryItem item) {
+            mTitleTextView.setText(item.toString());
+        }
+    }
+
+    private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
+        private List<GalleryItem> mGalleryItems;
+
+        public PhotoAdapter(List<GalleryItem> galleryItems) {
+            mGalleryItems = galleryItems;
+        }
+
         @Override
-        protected Void doInBackground(Void... voids) {
+        public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
+            GalleryItem galleryItem = mGalleryItems.get(position);
+            holder.bindGalleryItem(galleryItem);
+        }
+
+        @NonNull
+        @Override
+        public PhotoHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            TextView textView = new TextView(getActivity());
+            return new PhotoHolder(textView);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mGalleryItems.size();
+        }
+    }
+
+    // 在Fragment中添加内部类 FetchItemsTask 然后覆盖AsyncTask doInBackground方法 在里面从目标网站获取数据并日志记录
+    private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
+        @Override
+        protected List<GalleryItem> doInBackground(Void... params) {
+            /*
             try{
                 String result = new FilckerFetchr().getUrlString("https://www.bignerdranch.com");
                 Log.i(TAG, "Fetched contents of URL: " + result);
             } catch (IOException ioe){
                 Log.e(TAG, "Failed to Fetch URL: " + ioe);
-            }
+            }*/
+            return new FilckerFetchr().fetchItems();
+        }
 
-            return null;
+        @Override
+        protected void onPostExecute(List<GalleryItem> items) {
+            mItems = items;
+            setupAdapter();
         }
     }
+
     public static PhoneGalleryFragment newInstance() {
         return new PhoneGalleryFragment();
     }
@@ -54,7 +106,16 @@ public class PhoneGalleryFragment extends Fragment {
         mPhotoRecylerView = (RecyclerView) v.findViewById(R.id.phone_recycler_view);
         mPhotoRecylerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
+        setupAdapter();
         return v;
+    }
+
+    // setupAdapter()会自动配置RecyclerView的adaptor 应该在onCreateView()方法中调用这个方法，这样每次因设备旋转重新生成RecyclerView时，
+    // 可重新为其分配置对应的adapter
+    private void setupAdapter(){
+        if(isAdded()){
+            mPhotoRecylerView.setAdapter(new PhotoAdapter(mItems));
+        }
     }
 }
 
