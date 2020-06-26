@@ -1,8 +1,11 @@
 package com.example.phonegallery;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +30,8 @@ public class PhoneGalleryFragment extends Fragment {
 
     private RecyclerView mPhotoRecyclerView;
     private List<GalleryItem> mItems = new ArrayList<>();
+
+    private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
 
     // 首先定义 viewholder
     private class PhotoHolder extends RecyclerView.ViewHolder {
@@ -70,6 +75,8 @@ public class PhoneGalleryFragment extends Fragment {
 
             Drawable placeHolder = getResources().getDrawable(R.drawable.ic_launcher_foreground);
             holder.bindDrawable(placeHolder);
+            mThumbnailDownloader.queueThumbnail(holder, galleryItem.getmUrl());
+
         }
 
         // 在adapter里创建viewholder 在显示图表里 view是新创建的imangerview
@@ -122,6 +129,18 @@ public class PhoneGalleryFragment extends Fragment {
 
         // 调用FetchItemsTask新实例的execute方法就可以启动AsyncTask，进而触发后台线程调用doinBackground方法
         new FetchItemsTask().execute();
+        Handler reponseHandler = new Handler();
+        mThumbnailDownloader = new ThumbnailDownloader<>(reponseHandler);
+        mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
+            @Override
+            public void onThumbnailDownloaded(PhotoHolder target, Bitmap bitmap) {
+                Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                target.bindDrawable(drawable);
+            }
+        });
+        mThumbnailDownloader.start();
+        mThumbnailDownloader.getLooper();
+        Log.i(TAG, "Backgroud thread started");
     }
 
     @Nullable
@@ -133,6 +152,19 @@ public class PhoneGalleryFragment extends Fragment {
 
         setupAdapter();
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mThumbnailDownloader.clearQueue();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mThumbnailDownloader.quit();
+        Log.i(TAG, "Background thread destroy");
     }
 
     // setupAdapter()会自动配置RecyclerView的adaptor 应该在onCreateView()方法中调用这个方法，这样每次因设备旋转重新生成RecyclerView时，
