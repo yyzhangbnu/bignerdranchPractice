@@ -1,11 +1,13 @@
 package com.example.phonegallery;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,37 +28,60 @@ public class PhoneGalleryFragment extends Fragment {
     private RecyclerView mPhotoRecyclerView;
     private List<GalleryItem> mItems = new ArrayList<>();
 
+    // 首先定义 viewholder
     private class PhotoHolder extends RecyclerView.ViewHolder {
-        private TextView mTitleTextView;
+       // private TextView mTitleTextView;
+
+        // 其中元素是imageview
+        private ImageView mItemImageView;
 
         public PhotoHolder(View itemView) {
             super(itemView);
-            mTitleTextView = (TextView) itemView;
+           // mTitleTextView = (TextView) itemView;
+            mItemImageView = (ImageView) itemView.findViewById(R.id.item_image_view);
         }
 
+        /*
         public void bindGalleryItem(GalleryItem item) {
             mTitleTextView.setText(item.toString());
+        }
+        */
+
+        public void bindDrawable(Drawable drawable){
+            // 把adapter的数据传进来 bind到holder上
+            mItemImageView.setImageDrawable(drawable);
         }
     }
 
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
+        // adpter存数据 有一个私有变量就是用来存数据
         private List<GalleryItem> mGalleryItems;
 
+        // adapter构造函数
         public PhotoAdapter(List<GalleryItem> galleryItems) {
             mGalleryItems = galleryItems;
         }
 
+        // 传入的参数 第一个是viewholder 把数据bind上去 通过position找到数据
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
             GalleryItem galleryItem = mGalleryItems.get(position);
-            holder.bindGalleryItem(galleryItem);
+            // holder.bindGalleryItem(galleryItem);
+
+            Drawable placeHolder = getResources().getDrawable(R.drawable.ic_launcher_foreground);
+            holder.bindDrawable(placeHolder);
         }
 
+        // 在adapter里创建viewholder 在显示图表里 view是新创建的imangerview
         @NonNull
         @Override
         public PhotoHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            TextView textView = new TextView(getActivity());
-            return new PhotoHolder(textView);
+            /*TextView textView = new TextView(getActivity());
+            return new PhotoHolder(textView);*/
+
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            View view = inflater.inflate(R.layout.list_item_gallery, parent, false);
+            return new PhotoHolder(view);
         }
 
         @Override
