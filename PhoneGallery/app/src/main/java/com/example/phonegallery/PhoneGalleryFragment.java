@@ -8,13 +8,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -99,6 +104,11 @@ public class PhoneGalleryFragment extends Fragment {
 
     // 在Fragment中添加内部类 FetchItemsTask 然后覆盖AsyncTask doInBackground方法 在里面从目标网站获取数据并日志记录
     private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
+        private String mQuery;
+        public FetchItemsTask(String query){
+            mQuery = query;
+        }
+
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
             /*
@@ -110,11 +120,11 @@ public class PhoneGalleryFragment extends Fragment {
             }*/
            // return new FilckerFetchr().fetchItems();
 
-            String query = "robot";
-            if(query == null){
+          //  String query = "robot";
+            if(mQuery == null){
                 return new FilckerFetchr().fetchRecentPhotos();
             }else {
-                return new FilckerFetchr().searchPhotos(query);
+                return new FilckerFetchr().searchPhotos(mQuery);
             }
         }
 
@@ -133,9 +143,11 @@ public class PhoneGalleryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(true);
 
         // 调用FetchItemsTask新实例的execute方法就可以启动AsyncTask，进而触发后台线程调用doinBackground方法
-        new FetchItemsTask().execute();
+        // new FetchItemsTask().execute();
+        updateItems();
         Handler reponseHandler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>(reponseHandler);
         mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
@@ -147,7 +159,7 @@ public class PhoneGalleryFragment extends Fragment {
         });
         mThumbnailDownloader.start();
         mThumbnailDownloader.getLooper();
-        Log.i(TAG, "Backgroud thread started");
+        Log.i(TAG, "Background thread started");
     }
 
     @Nullable
@@ -172,6 +184,48 @@ public class PhoneGalleryFragment extends Fragment {
         super.onDestroy();
         mThumbnailDownloader.quit();
         Log.i(TAG, "Background thread destroy");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_photo_gallery, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+        // menu class是Androids.appcomp.widge.SearchView, can't use the below to get searchView object.
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d(TAG, "QueryTextSubmit: " + query);
+                updateItems();
+                QueryPreferences.setStoredQuery(getActivity(), query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG, "QueryTextChange: " + newText);
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_item_clear:
+                QueryPreferences.setStoredQuery(getActivity(), null);
+                updateItems();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void updateItems(){
+        String query = QueryPreferences.getStoredQuery(getActivity());
+        new FetchItemsTask(query).execute();
     }
 
     // setupAdapter()会自动配置RecyclerView的adaptor 应该在onCreateView()方法中调用这个方法，这样每次因设备旋转重新生成RecyclerView时，
