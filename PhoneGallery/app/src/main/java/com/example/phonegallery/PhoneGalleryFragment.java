@@ -108,7 +108,14 @@ public class PhoneGalleryFragment extends Fragment {
             } catch (IOException ioe){
                 Log.e(TAG, "Failed to Fetch URL: " + ioe);
             }*/
-            return new FilckerFetchr().fetchItems();
+           // return new FilckerFetchr().fetchItems();
+
+            String query = "robot";
+            if(query == null){
+                return new FilckerFetchr().fetchRecentPhotos();
+            }else {
+                return new FilckerFetchr().searchPhotos(query);
+            }
         }
 
         @Override
