@@ -1,5 +1,6 @@
 package com.example.phonegallery;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -148,6 +149,12 @@ public class PhoneGalleryFragment extends Fragment {
         // 调用FetchItemsTask新实例的execute方法就可以启动AsyncTask，进而触发后台线程调用doinBackground方法
         // new FetchItemsTask().execute();
         updateItems();
+
+        /*
+        Intent i = PollService.newIntent(getActivity());
+        getActivity().startService(i);
+        */
+        PollService.setServiceAlarm(getActivity(), true);
         Handler reponseHandler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>(reponseHandler);
         mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
