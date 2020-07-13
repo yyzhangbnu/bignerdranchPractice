@@ -1,5 +1,6 @@
 package com.example.sunset;
 
+import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.res.Resources;
@@ -58,7 +59,16 @@ public class SunsetFragment extends Fragment {
         ObjectAnimator sunsetAnimator = ObjectAnimator.ofInt(mSkyView, "backgroundColor", mBlueSkyColor, mSunsetSkyColor).setDuration(3000);
         sunsetAnimator.setEvaluator(new ArgbEvaluator());
         heightAnimator.setInterpolator(new AccelerateInterpolator());
-        heightAnimator.start();
-        sunsetAnimator.start();
+
+        ObjectAnimator nightAnimator = ObjectAnimator.ofInt(mSkyView, "backgroundColor", mSunsetSkyColor, mNightSkyColor);
+        nightAnimator.setEvaluator(new ArgbEvaluator());
+        // heightAnimator.start();
+        // sunsetAnimator.start();
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(heightAnimator)
+                .with(sunsetAnimator)
+                .before(nightAnimator);
+        animatorSet.start();
     }
 }
