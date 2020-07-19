@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Geotest</string>
+    <string name="false_button">False</string>
+    <string name="true_button">True</string>
+    <string name="next_button">Next</string>
+    <string name="prev_button">Prev</string>
+    <string name="cheat_button">cheat</string>
+    <string name="question1">question 1</string>
+    <string name="question2">question 2</string>
+    <string name="question3">question 3</string>
+    <string name="question4">question 4</string>
+    <string name="question5">question 5</string>
+    <string name="question6">question 6</string>
+    <string name="correct_toast">The answer is correct.</string>
+    <string name="incorrect_toast">The answer is incorrect.</string>
+    <string name="judgement_toast">Cheating is wrong.</string>
+    <string name="warning_text">Cheating is wrong.</string>
+    <string name="show_answer_button">Show answer</string>
+</resources>
